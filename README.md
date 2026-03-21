@@ -103,7 +103,7 @@ XUI Backup Hub یک سیستم بکاپ مرکزی برای پنل‌های X-UI
 تنها با **یک دستور** کل سیستم را نصب و راه‌اندازی کنید:
 
 ```bash
-sudo bash <(curl -fsSL https://raw.githubusercontent.com/Emadhabibnia1385/xui-backup-iran/main/xui-backup-setup.sh)
+sudo bash <(curl -fsSL https://raw.githubusercontent.com/Emadhabibnia1385/xui-backup-web/main/xui-backup-setup.sh)
 ```
 
 > **نکته:** بعد از اجرا، منویی نمایش داده می‌شود. گزینه مناسب را انتخاب کنید.
@@ -115,7 +115,7 @@ sudo bash <(curl -fsSL https://raw.githubusercontent.com/Emadhabibnia1385/xui-ba
 #### مرحله ۱ — دانلود اسکریپت
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Emadhabibnia1385/xui-backup-iran/main/xui-backup-setup.sh -o xui-backup-setup.sh
+curl -fsSL https://raw.githubusercontent.com/Emadhabibnia1385/xui-backup-web/main/xui-backup-setup.sh -o xui-backup-setup.sh
 chmod +x xui-backup-setup.sh
 sudo bash xui-backup-setup.sh
 ```

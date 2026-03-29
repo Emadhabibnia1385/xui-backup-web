@@ -6,11 +6,11 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org)
 [![Shell](https://img.shields.io/badge/Shell-Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/Emadhabibnia1385/xui-backup-iran?style=for-the-badge&logo=github)](https://github.com/Emadhabibnia1385/xui-backup-iran/stargazers)
+[![Stars](https://img.shields.io/github/stars/Emadhabibnia1385/xui-backup-web?style=for-the-badge&logo=github)](https://github.com/Emadhabibnia1385/xui-backup-web/stargazers)
 
 **یک راهکار ساده، سبک و قدرتمند برای بکاپ‌گیری خودکار از دیتابیس پنل‌های X-UI و 3X-UI در یک مکان مرکزی**
 
-[نصب سریع](#-نصب-سریع) • [ویژگی‌ها](#-ویژگیها) • [معماری](#-معماری) • [پشتیبانی](#-پشتیبانی)
+[نصب سریع](#-نصب-سریع) • [نصب دستی](#-نصب-دستی-روی-سرور) • [ویژگی‌ها](#-ویژگیها) • [معماری](#-معماری) • [پشتیبانی](#-پشتیبانی)
 
 ---
 
@@ -45,28 +45,28 @@ XUI Backup Hub یک سیستم بکاپ مرکزی برای پنل‌های X-UI
 <td width="25%" align="center">
 
 ### 🌐 پنل وب
-✅ رابط فارسی و زیبا  
+✅ طراحی مدرن (مشکی + سبز فسفری)  
 ✅ لاگین با یوزر و پسورد  
 ✅ دانلود مستقیم بکاپ  
-✅ حذف IP از پنل
+✅ حذف سرور و بکاپ‌ها
 
 </td>
 <td width="25%" align="center">
 
 ### 📦 مدیریت بکاپ
 ✅ دسته‌بندی بر اساس IP  
-✅ نگهداری ۵ بکاپ آخر  
+✅ نگهداری **۱۰ بکاپ آخر** (قابل تغییر)  
 ✅ حذف خودکار قدیمی‌ها  
 ✅ نمایش حجم و زمان
 
 </td>
 <td width="25%" align="center">
 
-### 🔐 امنیت
+### 🔐 امنیت و مانیتورینگ
 ✅ احراز هویت پنل وب  
 ✅ توکن اختصاصی آپلود  
-✅ فقط فایل‌های .db قبول  
-✅ بدون دسترسی عمومی
+✅ Auto-Register سرورها  
+✅ Heartbeat و وضعیت آنلاین
 
 </td>
 </tr>
@@ -78,21 +78,22 @@ XUI Backup Hub یک سیستم بکاپ مرکزی برای پنل‌های X-UI
 
 ```
 [سرور X-UI ۱]  ──┐
-                  │  curl POST (هر N دقیقه)
-[سرور X-UI ۲]  ──┼──────────────────────▶  [Backup Hub Server]
-                  │                              │
-[سرور X-UI ۳]  ──┘                         ذخیره .db
-                                                 │
-                                        پنل وب (port 8080)
-                                     نمایش + دانلود + حذف
+                  │  curl POST (هر N دقیقه)  +  Heartbeat
+[سرور X-UI ۲]  ──┼──────────────────────────▶  [Backup Hub Server]
+                  │                                    │
+[سرور X-UI ۳]  ──┘                              ذخیره .db
+                                                       │
+                                              پنل وب (port 8080)
+                                        نمایش + دانلود + حذف + مانیتور
 ```
 
 ### جریان کار:
 1. اسکریپت روی هر سرور X-UI فایل `x-ui.db` را پیدا می‌کند
-2. هر N دقیقه یک کپی به سرور مرکزی ارسال می‌کند
+2. هر N دقیقه یک کپی به سرور مرکزی ارسال می‌کند + Heartbeat
 3. سرور مرکزی فایل را با نام `backup__IP__TIME.db` ذخیره می‌کند
-4. فقط ۵ بکاپ آخر هر IP نگه داشته می‌شود
-5. از پنل وب می‌توانید بکاپ‌ها را مشاهده و دانلود کنید
+4. سرورهای جدید **به‌صورت خودکار ثبت** می‌شوند (Auto-Register)
+5. **۱۰ بکاپ آخر** هر IP نگه داشته می‌شود (قابل تنظیم)
+6. از پنل وب می‌توانید وضعیت آنلاین/آفلاین سرورها را ببینید و بکاپ‌ها را دانلود کنید
 
 ---
 
@@ -110,9 +111,7 @@ sudo bash <(curl -fsSL https://raw.githubusercontent.com/Emadhabibnia1385/xui-ba
 
 ---
 
-### روش دوم: نصب دستی 🔧
-
-#### مرحله ۱ — دانلود اسکریپت
+### روش دوم: دانلود و اجرا 🔧
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Emadhabibnia1385/xui-backup-web/main/xui-backup-setup.sh -o xui-backup-setup.sh
@@ -120,15 +119,62 @@ chmod +x xui-backup-setup.sh
 sudo bash xui-backup-setup.sh
 ```
 
-#### یا اگر SFTP/SCP دارید:
+---
+
+## 📤 نصب دستی روی سرور
+
+اگر فایل اسکریپت را دانلود کرده‌اید و می‌خواهید **دستی از کامپیوتر خود روی سرور آپلود کنید**:
+
+### آپلود با SCP (از کامپیوتر شخصی)
 
 ```bash
-# از کامپیوتر خود
-scp xui-backup-setup.sh root@IP_SERVER:/root/
+# آپلود فایل به سرور (جایگزین YOUR_SERVER_IP کنید)
+scp xui-backup-setup.sh root@YOUR_SERVER_IP:/root/
 
-# روی سرور
-sudo bash /root/xui-backup-setup.sh
+# وصل شدن به سرور
+ssh root@YOUR_SERVER_IP
+
+# اجرای اسکریپت
+chmod +x /root/xui-backup-setup.sh
+bash /root/xui-backup-setup.sh
 ```
+
+### آپلود با SFTP
+
+```bash
+# وصل شدن با SFTP
+sftp root@YOUR_SERVER_IP
+
+# آپلود فایل
+put xui-backup-setup.sh /root/xui-backup-setup.sh
+
+# خروج
+exit
+
+# وصل شدن با SSH و اجرا
+ssh root@YOUR_SERVER_IP
+chmod +x /root/xui-backup-setup.sh
+bash /root/xui-backup-setup.sh
+```
+
+### نصب روی Ubuntu (پیش‌نیازها)
+
+اگر سرور شما Ubuntu هست و Python3 نصب نیست:
+
+```bash
+# آپدیت پکیج‌ها
+apt update && apt upgrade -y
+
+# نصب پیش‌نیازها
+apt install -y python3 curl
+
+# دانلود و اجرا
+curl -fsSL https://raw.githubusercontent.com/Emadhabibnia1385/xui-backup-web/main/xui-backup-setup.sh -o xui-backup-setup.sh
+chmod +x xui-backup-setup.sh
+bash xui-backup-setup.sh
+```
+
+> **نکته:** اسکریپت باید با یوزر `root` اجرا شود. اگر root نیستید از `sudo` استفاده کنید.
 
 ---
 
@@ -139,15 +185,16 @@ sudo bash /root/xui-backup-setup.sh
 اسکریپت را اجرا کنید و گزینه **1** را بزنید:
 
 ```
-1) Install Backup Hub (central receiver server)
+1) Install Backup Hub (central server)
 ```
 
 اطلاعات زیر از شما پرسیده می‌شود:
 
 | پارامتر | توضیح | پیش‌فرض |
 |---------|-------|---------|
-| Upload Token | توکن امنیتی برای آپلود | `emad` |
+| Upload Token | توکن امنیتی برای آپلود | `xui2024` |
 | Port | پورت سرویس وب | `8080` |
+| Max Backups | حداکثر بکاپ هر سرور | `10` |
 | Web Username | نام کاربری پنل وب | `admin` |
 | Web Password | رمز عبور پنل وب | — |
 
@@ -165,7 +212,7 @@ Upload URL    : http://YOUR_IP:8080/upload?token=YOUR_TOKEN
 اسکریپت را اجرا کنید و گزینه **2** را بزنید:
 
 ```
-2) Install Client (X-UI sender server)
+2) Install Backup Client (X-UI server)
 ```
 
 اطلاعات زیر از شما پرسیده می‌شود:
@@ -174,8 +221,10 @@ Upload URL    : http://YOUR_IP:8080/upload?token=YOUR_TOKEN
 |---------|-------|---------|
 | Hub IP | آدرس IP سرور مرکزی | — |
 | Hub Port | پورت سرور مرکزی | `8080` |
-| Upload Token | همان توکنی که در Hub تنظیم کردید | `emad` |
+| Upload Token | همان توکنی که در Hub تنظیم کردید | — |
 | Interval | فاصله ارسال بکاپ (دقیقه) | `2` |
+
+> سرورهای جدید **به صورت خودکار** در پنل ثبت می‌شوند (Auto-Register).
 
 ---
 
@@ -213,8 +262,10 @@ tail -f /var/log/xui-push-http.log
 ```
 /root/backup-hub/
 ├── backup_hub.py              # سرور اصلی Python
+├── logs/
+│   └── hub.log                # لاگ هاب
 └── data/
-    ├── config.json            # توکن و اطلاعات لاگین
+    ├── config.json            # توکن، لاگین و تنظیمات
     └── backups/
         ├── backup__1_2_3_4__20260320_120000.db
         ├── backup__1_2_3_4__20260320_121500.db
@@ -299,7 +350,7 @@ find / -name "x-ui.db" 2>/dev/null
 <summary><b>پنل وب باز نمی‌شود</b></summary>
 
 ```bash
-# بررسی فایروال
+# بررسی فایروال (Ubuntu)
 ufw allow 8080
 
 # بررسی وضعیت سرویس
@@ -328,13 +379,13 @@ systemctl status backup-hub
 
 ### راه‌های ارتباطی
 
-[![Telegram](https://img.shields.io/badge/Developer-@EmadHabibnia-blue?style=for-the-badge&logo=telegram)](https://t.me/EmadHabibnia)
-[![GitHub](https://img.shields.io/badge/GitHub-@Emadhabibnia1385-black?style=for-the-badge&logo=github)](https://github.com/Emadhabibnia1385)
+[![Telegram](https://img.shields.io/badge/Telegram-@Emad__Habibnia-blue?style=for-the-badge&logo=telegram)](https://t.me/Emad_Habibnia)
+[![GitHub](https://img.shields.io/badge/GitHub-Emadhabibnia1385-black?style=for-the-badge&logo=github)](https://github.com/Emadhabibnia1385)
 
 </div>
 
-- 💬 **تلگرام:** [@EmadHabibnia](https://t.me/EmadHabibnia)
-- 🐙 **GitHub:** [@Emadhabibnia1385](https://github.com/Emadhabibnia1385)
+- 💬 **تلگرام:** [@Emad_Habibnia](https://t.me/Emad_Habibnia)
+- 🐙 **GitHub:** [Emadhabibnia1385](https://github.com/Emadhabibnia1385)
 
 ---
 
@@ -351,6 +402,6 @@ systemctl status backup-hub
 
 <div align="center">
 
-**ساخته شده با ❤️ توسط [Emad Habibnia](https://t.me/EmadHabibnia)**
+**ساخته شده با ❤️ توسط [Emad Habibnia](https://t.me/Emad_Habibnia)**
 
 </div>

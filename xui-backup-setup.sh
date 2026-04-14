@@ -279,13 +279,12 @@ def del_server_backups(ip):
 
 # ── CSS ───────────────────────────────────────────────────
 CSS = """
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
   background:#0a0a0a;
   color:#d4d4d4;
-  font-family:'Inter','Segoe UI',Arial,sans-serif;
+  font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;
   min-height:100vh;
   padding:20px;
   line-height:1.6;
@@ -1057,7 +1056,15 @@ Persistent=true
 WantedBy=timers.target
 TIMEREOF
 
+  systemctl daemon-reload
+  systemctl enable xui-push-backup.timer
+  systemctl start xui-push-backup.timer
 
+  if systemctl is-active --quiet xui-push-backup.timer; then
+    print_ok "Backup timer enabled and running."
+  else
+    print_err "Timer failed to start. Check: journalctl -u xui-push-backup.timer -n 20"
+  fi
 
   echo ""
   print_info "Running initial backup test..."
@@ -1121,8 +1128,8 @@ manage_services() {
 
       9) if [ -f /usr/local/bin/xui-push-http.sh ]; then
            print_info "Sending backup..."
-           if /usr/local/bin/xui-push-http.sh; then print_ok "Done."; else print_err "Failed."; fi
-
+           if /usr/local/bin/xui-push-http.sh; then print_ok "Done."; else print_err "Failed. See: tail -20 /var/log/xui-push-http.log"; fi
+         else
            print_err "Push script not found. Install client first."
          fi; pause ;;
      10) write_client_agent; pause ;;
